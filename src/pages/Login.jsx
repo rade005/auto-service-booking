@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import {useState} from "react";
 import { useAuth } from "../context/AuthContext";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 export default function Login() {
 
@@ -16,8 +18,26 @@ export default function Login() {
         setError("");
 
         try {
-            await login(email, password);
-            navigate("/dashboard");
+            const userCredential = await login(email, password);
+            const user = userCredential.user;
+
+            const userRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userRef)
+
+            if(!userSnap.exists()) {
+                navigate("/dashboard");
+                return;
+            }
+            const userData = userSnap.data();
+
+            if (userData.role === "admin") {
+                navigate("/admin");
+            } else if (userData.role === "owner") {
+                navigate("/owner");
+            } else {
+                navigate("/dashboard");
+            }
+
         } catch (error) {
             setError(error.message);
         }

@@ -1,5 +1,6 @@
 import { useAuth } from "../context/AuthContext"
 import { useNavigate} from "react-router-dom";
+import { updateEmail} from "firebase/auth"
 import {useEffect, useState} from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -59,19 +60,33 @@ export default function Profile() {
     }
 
     const updateUserData = async () => {
+
+        if (emailInput.trim() === "") {
+            setError("Email ne sme biti prazan");
+            return;
+        }
+        setError(null);
+        setSuccess(null);
+
         try {
+            await updateEmail(currentUser, emailInput);
             const userRef = doc(db, "users", currentUser.uid);
             await updateDoc(userRef, {email: emailInput})
+
             setUserData(prev => ({...prev, email: emailInput}));
             setSuccess("Profil uspešno ažuriran")
         } catch (error) {
-            console.error(error);
-            setError("Greška pri ažuriranju korisnika");
+            console.log("AUTH ERROR:",error.code, error.message);
+
+            if (error.code === "auth/requires-recent-login") {
+                setError("Morate se ponovo ulogovati da biste promenili email")
+            } else {
+                setError("Greška pri ažuriranju korisnika");
+            }
         }
     }
 
     if(loading) return <p>Loading...</p>;
-    if(error) return <p>{error}</p>;
     if(!userData) return <p>Učitavanje podataka korisnika</p>
 
     return (
