@@ -7,6 +7,7 @@ import { db } from "../firebase/config";
 
 export default function Dashboard() {
     const {currentUser, logOut} = useAuth();
+    const navigate = useNavigate();
     const [bookings, setBookings] = useState([]);
     const [filteredBookings, setFilteredBookings] = useState([]);
     const [filterStatus, setFilterStatus] = useState("ALL")
@@ -14,7 +15,7 @@ export default function Dashboard() {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [userReviews, setUserReviews] = useState([]);
-    const navigate = useNavigate();
+
 
     useEffect(() => {
         if(!currentUser) {

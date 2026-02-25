@@ -10,7 +10,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const { login }= useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {

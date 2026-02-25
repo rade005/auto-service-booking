@@ -1,70 +1,129 @@
-# Getting Started with Create React App
+# 🚗 Auto Service Booking Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Web aplikacija za online zakazivanje termina u auto-servisima.
 
-## Available Scripts
+Platforma omogućava klijentima da pronađu servis po gradu i usluzi, rezervišu termin i ostave recenziju.  
+Vlasnici servisa upravljaju rezervacijama, dok administrator verifikuje servise i nadgleda sistem.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🛠 Tehnologije
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React
+- Firebase Authentication
+- Firebase Firestore
+- React Router
+- Context API
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 👤 Korisničke role
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 👨‍🔧 Klijent
+- Registracija i login
+- Pretraga servisa po gradu, usluzi i oceni
+- Zakazivanje termina
+- Otkazivanje rezervacije
+- Ostavlja recenziju nakon završene usluge
+- Pregled istorije rezervacija
 
-### `npm run build`
+### 🏢 Vlasnik servisa
+- Kreiranje servisa
+- Definisanje usluga (naziv, cena, trajanje)
+- Upravljanje rezervacijama (potvrda, otkazivanje, završavanje)
+- Pregled recenzija za sopstveni servis
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🛡 Administrator
+- Verifikacija novih servisa (APPROVED / REJECTED)
+- Pregled svih rezervacija
+- Pregled svih korisnika
+- Moderacija sistema
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📅 Booking sistem
 
-### `npm run eject`
+Statusi rezervacija:
+- PENDING
+- CONFIRMED
+- COMPLETED
+- CANCELLED
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Funkcionalnosti:
+- Upravljanje statusima rezervacija
+- Filtriranje i pregled rezervacija po roli
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## ⭐ Recenzije
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Klijenti mogu ostaviti ocenu i komentar nakon završene rezervacije
+- Ocena utiče na prosečnu ocenu servisa
+- Vlasnici mogu pregledati recenzije svojih servisa
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🗄 Struktura baze podataka (Firestore)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### services
+- name
+- city
+- description
+- type
+- ownerId
+- status (PENDING / APPROVED / REJECTED)
+- services[] (niz usluga: naziv, cena, trajanje)
+- averageRating
+- reviewsCount
 
-### Code Splitting
+### bookings
+- userId
+- ownerId
+- serviceId
+- serviceName
+- service (naziv usluge)
+- date
+- time
+- status
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### users
+- email
+- role (client / owner / admin)
 
-### Analyzing the Bundle Size
+### reviews
+- userId
+- serviceId
+- serviceName
+- rating
+- comment
+- createdAt
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🚀 Pokretanje projekta lokalno
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. Kloniraj repozitorijum
 
-### Advanced Configuration
+git clone https://github.com/rade005/auto-service-booking.git
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+2. Uđi u folder projekta
+3. Instaliraj depedencije
+4. Pokreni aplikaciju
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📌 Cilj projekta
 
-### `npm run build` fails to minify
+Cilj projekta je demonstracija:
+- rada sa Firebase bazom podataka
+- role-based autentikacije
+- CRUD operacija
+- izrade funkcionalne web aplikacije sa više korisničkih rola
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## 📄 Autor
+
+Rade Dobraš
+
+Belgrade, Serbia  

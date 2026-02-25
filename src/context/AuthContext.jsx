@@ -8,7 +8,7 @@ import { createUserWithEmailAndPassword,
 
 const AuthContext = createContext();
 
-export function useAuth() {
+export const useAuth = ()  => {
     return useContext(AuthContext);
 }
 

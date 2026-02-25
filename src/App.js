@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route} from "react-router-dom";
+import { Home } from "./pages/Home";
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard";
@@ -17,9 +18,12 @@ import {CreateService} from "./pages/CreateService";
 
 function App() {
   return (
+
+
       <AuthProvider>
       <BrowserRouter>
         <Routes>
+            <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={
               <ProtectedRoute>
               <Dashboard />
@@ -44,8 +48,8 @@ function App() {
             <Route path="/services" element={<ProtectedRoute><ServiceSearch /></ProtectedRoute>} />
             <Route path="/services/:serviceId" element={<ProtectedRoute><Services /></ProtectedRoute>} />
             <Route path="/review/:bookingId" element={<ProtectedRoute><Review /></ProtectedRoute>} />
-            <Route path="/owner" element={<OwnerDashboard/>} />
-            <Route path="/create-service" element={<CreateService />} />
+            <Route path="/owner" element={<ProtectedRoute><OwnerDashboard/></ProtectedRoute>} />
+            <Route path="/create-service" element={<ProtectedRoute><CreateService/></ProtectedRoute>} />
 
 
         </Routes>

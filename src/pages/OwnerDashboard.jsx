@@ -1,5 +1,5 @@
 import { useState, useEffect} from "react";
-import { collection, query, where, doc, getDocs, getDoc, updateDoc} from "firebase/firestore";
+import {collection, doc, getDocs, getDoc, arrayUnion, updateDoc} from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useAuth} from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,10 @@ export const OwnerDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [reviews, setReviews] = useState([]);
     const [loadingReviews, setLoadingReviews] = useState(true);
+    const [newServiceName, setNewServiceName] = useState("");
+    const [newServicePrice, setNewServicePrice] = useState("");
+    const [newServiceDuration, setNewServiceDuration] = useState("");
+    const [selectedServiceId, setSelectedServiceId] = useState("");
 
 
     useEffect(() => {
@@ -48,8 +52,7 @@ export const OwnerDashboard = () => {
 
                 const bookingSnap = await getDocs(collection(db, "bookings"));
                 const allBookings = bookingSnap.docs.map(doc => ({
-                    id: doc.id, ...doc.data()
-                }));
+                    id: doc.id, ...doc.data()}));
 
                 const ownerBookings = allBookings.filter(booking => ownerServices.some(service =>
                     service.id === booking.serviceId))
@@ -64,6 +67,29 @@ export const OwnerDashboard = () => {
         fetchOwnerData();
 
     }, [currentUser]);
+
+    const addNewService = async () => {
+        if(!selectedServiceId) return alert("Izaberite servis");
+        if(!newServiceName || !newServicePrice || !newServiceDuration) return alert("Popunite sva polja")
+        try {
+            const serviceRef = doc(db, "services", selectedServiceId);
+
+            await updateDoc(serviceRef, {
+                services: arrayUnion({
+                    name: newServiceName,
+                    duration: Number(newServiceDuration),
+                    price: Number(newServicePrice)
+                })
+            })
+            alert("Usluga dodata!")
+            setNewServiceName("");
+            setNewServicePrice("");
+            setNewServiceDuration("");
+        } catch (error) {
+            console.error(error);
+            alert("Greška pri dodavanju usluge");
+        }
+    }
 
     const handleConfirm = async (id) => {
         await confirmBooking(id);
@@ -116,11 +142,32 @@ export const OwnerDashboard = () => {
 
     return (
         <>
+            <h2>Owner Dashboard</h2>
 
+            <select
+                value={selectedServiceId} onChange={(e) => setSelectedServiceId(e.target.value)}>
+                <option value="">Izaberite servis</option>
+                {services.map(service => (
+                    <option key={service.id} value={service.id}>{service.name} - {service.city}</option>
+                ))}
+            </select>
 
+            <div>
+            <input type="text" value={newServiceName} onChange={(e) => setNewServiceName(e.target.value)} />
+            </div>
 
+            <div>
+            <input type="number" placeholder="Cena (RSD)" value={newServicePrice}
+                   onChange={(e) => setNewServicePrice(e.target.value)} />
+            </div>
 
-        <h2>Owner Dashboard</h2>
+            <div>
+            <input type="number" placeholder="Trajanje (min)" value={newServiceDuration}
+                   onChange={(e) => setNewServiceDuration(e.target.value)} />
+            </div>
+
+            <button onClick={addNewService}>Dodaj uslugu</button>
+
             <button onClick={handleLogout}>Logout</button>
 
             <h3>Moji servisi</h3>

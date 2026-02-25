@@ -14,7 +14,6 @@ export const AdminServices = () => {
             const servicesCol = collection(db, "services");
             const snapshot = await getDocs(servicesCol);
             setServicesList(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
-
         }
         fetchServices();
 
@@ -32,7 +31,6 @@ export const AdminServices = () => {
        };
 
         try {
-            // Proveravamo da li polje services postoji
             const serviceSnap = await getDoc(serviceRef);
 
             if (!serviceSnap.exists()) {
@@ -43,27 +41,20 @@ export const AdminServices = () => {
             const serviceData = serviceSnap.data();
 
             if (!serviceData.services) {
-                // Ako ne postoji, kreiramo ga kao array sa novim objektom
                 await updateDoc(serviceRef, {
                     services: [newServiceObject]
                 });
             } else {
-                // Ako postoji, dodajemo novi objekat u array
                 await updateDoc(serviceRef, {
                     services: arrayUnion(newServiceObject)
                 });
             }
-
-            // Update lokalnog state-a da se odmah vidi u UI
             setServicesList(prev =>
                 prev.map(s =>
                     s.id === selectedServiceId
-                        ? { ...s, services: [...(s.services || []), newServiceObject] }
-                        : s
-                )
+                        ? { ...s, services: [...(s.services || []), newServiceObject] } : s)
             );
 
-            // Reset input-a
             setNewServiceName("");
             setPrice("");
             setDuration("");
@@ -83,7 +74,6 @@ export const AdminServices = () => {
                     value={selectedServiceId}
                     onChange={(e) => {
                         setSelectedServiceId(e.target.value);
-                        console.log("Selected service ID:", e.target.value);
                     }}
                 >
                     <option value="">--Izaberite servis--</option>

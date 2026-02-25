@@ -31,24 +31,19 @@ const ServiceSearch = () => {
     }, []);
 
     const filterServices = () => {
-        let filtered = [...allServices];
+        const city = searchCity.trim().toLowerCase();
+        const type = searchType.trim().toLowerCase();
+        const rating = Number(searchRating);
+        const filtered = allServices.filter(service => {
+            const matchesCity = !city || (service.city || "").toLowerCase().includes(city);
 
-        if (searchCity.trim() !== "") {
-            filtered = filtered.filter(service => service.city.toLowerCase().includes(searchCity.toLowerCase())
-            );
-        }
-        if (searchType.trim() !== "") {
-            filtered = filtered.filter(service => service.type.toLowerCase().includes(searchType.trim().toLowerCase()))
-        }
+            const matchesType = !type || (service.services || []).some(s => s.name.toLowerCase().includes(type));
+            const matchesRating = !rating || Number(service.rating || 0) >= rating;
+            return matchesCity && matchesType && matchesRating;
+        });
+        setFilteredServices(filtered);
 
-        if (searchRating !== "") {
-            filtered = filtered.filter(service => Number(service.rating) >= Number(searchRating))
-        }
-
-        setFilteredServices(filtered)
     }
-
-
         return (
             <>
                 <h2>Pretraga servisa</h2>

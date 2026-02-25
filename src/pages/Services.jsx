@@ -33,7 +33,6 @@ export default function Services() {
                 } else {
                    const data = {id: snap.id, ...snap.data()}
                     setService(data);
-                   console.log("SERVIS IZ FIRESTORE-A:", data);
                 }
             } catch (error) {
                 setError("Greška pri učitavanju servisa");
@@ -149,16 +148,6 @@ export default function Services() {
             }
         }
 
-        console.log("BOOKING PAYLOAD", {
-            userId: currentUser?.uid,
-            serviceId: service?.id,
-            serviceName: service?.name,
-            service: selectedService,
-            date: selectedDate,
-            time: selectedTime,
-            status: "PENDING",
-        });
-
 
         try {
         const q = query
@@ -174,9 +163,6 @@ export default function Services() {
             setLoading(false);
             return;
         }
-
-
-
             await createBooking({
                 userId: currentUser.uid,
                 serviceId: service.id,
@@ -205,7 +191,6 @@ export default function Services() {
     return (
         <>
         <h2>Zakazivanje servisa</h2>
-
 
             <p><b>Servis:</b> {service.name}</p>
             <p><b>Grad:</b> {service.city}</p>

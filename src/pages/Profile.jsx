@@ -1,8 +1,7 @@
 import { useAuth } from "../context/AuthContext"
 import { useNavigate} from "react-router-dom";
-import { updateEmail} from "firebase/auth"
 import {useEffect, useState} from "react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 export default function Profile() {
@@ -11,8 +10,6 @@ export default function Profile() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [userData, setUserData] = useState(null);
-    const [emailInput, setEmailInput] = useState("");
-    const [success, setSuccess] = useState(null);
 
     const fetchUserData = async () => {
         if(!currentUser) return;
@@ -23,7 +20,6 @@ export default function Profile() {
 
             if(userSnap.exists()) {
                 setUserData(userSnap.data());
-                setEmailInput(userSnap.data().email);
             } else {
                 console.log("Nema podataka za ovog korisnika");
             }
@@ -59,33 +55,6 @@ export default function Profile() {
         }
     }
 
-    const updateUserData = async () => {
-
-        if (emailInput.trim() === "") {
-            setError("Email ne sme biti prazan");
-            return;
-        }
-        setError(null);
-        setSuccess(null);
-
-        try {
-            await updateEmail(currentUser, emailInput);
-            const userRef = doc(db, "users", currentUser.uid);
-            await updateDoc(userRef, {email: emailInput})
-
-            setUserData(prev => ({...prev, email: emailInput}));
-            setSuccess("Profil uspešno ažuriran")
-        } catch (error) {
-            console.log("AUTH ERROR:",error.code, error.message);
-
-            if (error.code === "auth/requires-recent-login") {
-                setError("Morate se ponovo ulogovati da biste promenili email")
-            } else {
-                setError("Greška pri ažuriranju korisnika");
-            }
-        }
-    }
-
     if(loading) return <p>Loading...</p>;
     if(!userData) return <p>Učitavanje podataka korisnika</p>
 
@@ -93,16 +62,15 @@ export default function Profile() {
         <>
             <h2>Profil korisnika</h2>
 
+            {error && <p>{error}</p>}
+
             <p>Email: {userData.email}</p>
             <p>User ID: {userData.uid}</p>
             <p>Role: {userData.role}</p>
             <p>Kreiran: {userData.createdAt ? userData.createdAt.toDate().toLocaleString() : "Nepoznat datum"}</p>
 
-            <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)}/>
-
-            <button onClick={updateUserData}>Save</button>
             <button onClick={handleLogout}>Logout</button>
-            {success && <p>{success}</p>}
+
 
 
         </>

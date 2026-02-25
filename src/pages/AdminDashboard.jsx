@@ -46,42 +46,51 @@ export const AdminDashboard = () => {
         }
     }
 
-    const checkAdminAndFetchData = async () => {
-        try {
-            const userRef = doc(db, "users", currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            const serviceCol = collection(db, "services");
-            const servicesSnapshot = await getDocs(serviceCol);
-            const allServices = servicesSnapshot.docs.map(d => (
-                {id: d.id, ...d.data()}));
-
-            setPendingServices(allServices.filter(s => s.status === "PENDING"));
-
-            if (!userSnap.exists()) {
-                navigate("/dashboard");
-                return;
-            }
-            const userData = userSnap.data();
-            if (userData.role !== "admin") {
-                navigate("/dashboard");
-                return;
-            }
-            const allBookings = await getAllBookings();
-            setBookings(allBookings);
-        } catch (error) {
-            console.log(error);
-            setError("Greška pri učitavanju admin podataka")
-        } finally {
-            setLoading(false);
-        }
-    }
     useEffect(() => {
+        const checkAdminAndFetchData = async () => {
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+                const userSnap = await getDoc(userRef);
+
+                const serviceCol = collection(db, "services");
+                const servicesSnapshot = await getDocs(serviceCol);
+                const allServices = servicesSnapshot.docs.map(d => ({
+                    id: d.id, ...d.data()}));
+
+                setPendingServices(
+                    allServices.filter(s => s.status === "PENDING")
+                );
+
+                if (!userSnap.exists()) {
+                    navigate("/dashboard");
+                    return;
+                }
+
+                const userData = userSnap.data();
+                if (userData.role !== "admin") {
+                    navigate("/dashboard");
+                    return;
+                }
+
+                const allBookings = await getAllBookings();
+                setBookings(allBookings);
+
+            } catch (error) {
+                console.log(error);
+                setError("Greška pri učitavanju admin podataka");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (!currentUser) {
             navigate("/login");
             return;
         }
+
         checkAdminAndFetchData();
-    }, [currentUser]);
+
+    }, [currentUser, navigate]);
 
     const handleConfirm = async (bookingId) => {
         try {
@@ -116,6 +125,7 @@ export const AdminDashboard = () => {
         await logOut();
         navigate("/login");
     }
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
 
@@ -135,7 +145,7 @@ export const AdminDashboard = () => {
                 <button onClick={() => setActiveTab("SERVICES")}>
                     Usluge
                 </button>
-                <button onClick={() => setActiveTab("PENDING_SERVICES")}>Potvrdi</button>
+                <button onClick={() => setActiveTab("PENDING_SERVICES")}>Potvrdi servis</button>
             </div>
 
             {activeTab === "PENDING_SERVICES" && (
@@ -178,7 +188,8 @@ export const AdminDashboard = () => {
                     <ul>
                         {filteredBookings.map(booking => (
                             <li key={booking.id}>
-                                <p>Servis: {booking.service}</p>
+                                <p>Servis: {booking.serviceName}</p>
+                                <p>Usluga: {booking.service}</p>
                                 <p>Datum: {booking.date}</p>
                                 <p>Vreme: {booking.time}</p>
                                 <p>Status: {booking.status}</p>
